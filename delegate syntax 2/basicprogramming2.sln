@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "delegate syntax 2", "delegate syntax 2\delegate syntax 2.csproj", "{6D77D00B-41B0-4E1C-A94A-97840F4D2295}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delegate", "..\Delegate\Delegate.csproj", "{32AE085F-75C2-4416-9D83-6CA884CF0089}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Delegate", "..\Delegate\Delegate.csproj", "{32AE085F-75C2-4416-9D83-6CA884CF0089}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "func-brainfuck", "..\func-brainfuck.csproj\func-brainfuck.csproj", "{4952B70C-9974-4E05-AC3B-A86596A0C537}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{32AE085F-75C2-4416-9D83-6CA884CF0089}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32AE085F-75C2-4416-9D83-6CA884CF0089}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32AE085F-75C2-4416-9D83-6CA884CF0089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4952B70C-9974-4E05-AC3B-A86596A0C537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4952B70C-9974-4E05-AC3B-A86596A0C537}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4952B70C-9974-4E05-AC3B-A86596A0C537}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4952B70C-9974-4E05-AC3B-A86596A0C537}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
