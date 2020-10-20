@@ -1,51 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dungeon
 {
-	public class DungeonTask
-	{
-		public static MoveDirection[] FindShortestPath(Map map)
-		{
-			var startToChests = BfsTask.FindPaths(map, map.InitialPosition, map.Chests);
-			if (startToChests == null)
-			{
-				var startToExit = BfsTask.FindPaths(map, map.InitialPosition, new Point[1] {map.Exit});
-				return PointsToMoveDirection(startToExit.First());
-			}
+    public class DungeonTask
+    {
+        public static MoveDirection[] FindShortestPath(Map map)
+        {
+            var startToExit = BfsTask.FindPaths(map, map.InitialPosition, new[] {map.Exit}).FirstOrDefault();
+            if (startToExit == null)
+                return new MoveDirection[0];
+            if (map.Chests.Any(chest => startToExit.Contains(chest)))
+                return startToExit.PointsToMoveDirection().ToArray();
+            var startToChests = BfsTask.FindPaths(map, map.InitialPosition, map.Chests);
+            if (!startToChests.Any())
+                return startToExit.PointsToMoveDirection().ToArray();
 
-			var exitToChests = BfsTask.FindPaths(map, map.Exit, map.Chests).Reverse();
-			var startToChestToExit = startToChests
-				.Join(exitToChests, sToCh => sToCh.Value, eToCh => eToCh.Value,
-				(sToCh, eToCh) =>
-				{
-					var connect = new SinglyLinkedList<Point>(eToCh.Value, sToCh);
-					return eToCh.Skip(1).Aggregate(connect, (current, point) => new SinglyLinkedList<Point>(point, current));
-				});
-			var shortest = startToChestToExit.OrderBy(list => list.Length).First();
-			return PointsToMoveDirection(shortest);
-		}
+            return startToChests.GetShortestPath(map).PointsToMoveDirection().ToArray();
+        }
+    }
 
-		private static MoveDirection[] PointsToMoveDirection(SinglyLinkedList<Point> path)
-		{
-			return path
-				.Zip(path.Skip(1), ((leftPoint, rightPoint) =>
-				{
-					if (rightPoint.X > leftPoint.X)
-						return MoveDirection.Right;
-					else if (rightPoint.X < leftPoint.X)
-						return MoveDirection.Left;
-					else if (rightPoint.Y > leftPoint.Y)
-						return MoveDirection.Up;
-					else
-						return MoveDirection.Down;
-				}))
-				.ToArray();
-		}
-	}
+
+    public static class PathExtensions
+    {
+        public static IEnumerable<Point> GetShortestPath(this IEnumerable<SinglyLinkedList<Point>> startToChests,
+            Map map)
+        {
+            var exitToChests = BfsTask.FindPaths(map, map.Exit, map.Chests);
+
+            var startToChestToExit = startToChests
+                .Join(exitToChests, sToCh => sToCh.Value, eToCh => eToCh.Value,
+                    (sToCh, eToCh) =>
+                    {
+                        var connect = new SinglyLinkedList<Point>(eToCh.Value, sToCh);
+                        return eToCh.Skip(1).Aggregate(connect,
+                            (current, point) => new SinglyLinkedList<Point>(point, current));
+                    })
+                .Where(sTcTe => sTcTe != null);
+
+            return startToChestToExit.OrderBy(list => list.Length).First();
+        }
+
+        public static IEnumerable<MoveDirection> PointsToMoveDirection(this IEnumerable<Point> path)
+        {
+            var leftPoint = path.Reverse().Take(path.Count()).GetEnumerator();
+            var rightPoint = path.Reverse().Skip(1).GetEnumerator();
+            while (leftPoint.MoveNext() && rightPoint.MoveNext())
+            {
+                if (leftPoint.Current == rightPoint.Current)
+                    continue;
+                if (rightPoint.Current.X > leftPoint.Current.X)
+                    yield return MoveDirection.Right;
+                else if (rightPoint.Current.X < leftPoint.Current.X)
+                    yield return MoveDirection.Left;
+                else if (rightPoint.Current.Y > leftPoint.Current.Y)
+                    yield return MoveDirection.Down;
+                else if (rightPoint.Current.Y < leftPoint.Current.Y)
+                    yield return MoveDirection.Up;
+            }
+        }
+    }
 }
